@@ -7,6 +7,7 @@ import Account from "./pages/Account";
 import Login from "./pages/Login";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./components/AppLayout";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="cabins" element={<Cabins />} />
           <Route path="users" element={<Users />} />
           <Route path="account" element={<Account />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         <Route path="login" element={<Login />} />
