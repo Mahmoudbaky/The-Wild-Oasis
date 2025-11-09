@@ -9,14 +9,14 @@ import {
 
 function MainNav() {
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-5 text-gray-600 text-base font-medium py-5 px-10 transition-all duration-300 ${
+    `flex items-center gap-5 text-gray-600 text-sm font-medium py-5 px-6 pl-0  transition-all duration-300 ${
       isActive
         ? "text-gray-800 bg-gray-50 rounded-sm"
         : "hover:text-gray-800 hover:bg-gray-50 hover:rounded-sm"
     }`;
 
   const iconClasses = (isActive: boolean) =>
-    `w-10 h-10 transition-all duration-300 ${
+    `w-8 h-8 transition-all duration-300 ${
       isActive ? "text-brand-600" : "text-gray-400"
     }`;
 
