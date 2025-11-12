@@ -12,7 +12,33 @@ export const cabinSchema = z
       .min(0, "Discount must be at least 0")
       .optional(),
     description: z.string().optional(),
-    image: z.instanceof(File).nullable(),
+    image: z.instanceof(File).or(z.string().url()).nullable(),
+  })
+  .superRefine((data, ctx) => {
+    const { discount, regularPrice } = data;
+    if (discount !== undefined && discount !== null) {
+      if (discount > regularPrice) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["discount"],
+          message: "Discount cannot be more than regular price",
+        });
+      }
+    }
+  });
+
+export const editCabinSchema = z
+  .object({
+    id: z.number(),
+    name: z.string().min(2, "Name must be at least 2 characters long"),
+    maxCapacity: z.coerce.number().min(1, "Capacity must be at least 1"),
+    regularPrice: z.coerce.number().min(0, "Price must be at least 0"),
+    discount: z.coerce
+      .number()
+      .min(0, "Discount must be at least 0")
+      .optional(),
+    description: z.string().optional(),
+    image: z.instanceof(File).or(z.string().url()).nullable(),
   })
   .superRefine((data, ctx) => {
     const { discount, regularPrice } = data;

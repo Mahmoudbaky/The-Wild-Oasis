@@ -14,10 +14,19 @@ import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Trash, Edit } from "lucide-react";
+import CabinDialogForm from "./CabinDialogForm";
+import { useState } from "react";
+import { z } from "zod";
+import { cabinSchema } from "@/validators/cabinValidators";
+import type { editCabinSchema } from "@/validators/cabinValidators";
 
 type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
+export type CabinFormData = z.infer<typeof cabinSchema>;
 
 const CabinsTable = () => {
+  const [dialogIsOpen, setDialogIsOpen] = useState(false);
+  const [cabinToEdit, setCabinToEdit] = useState<Cabin>();
+
   const { isLoading, data: cabins } = useQuery({
     queryKey: ["cabins"],
     queryFn: cabinServices.getCabins,
@@ -88,13 +97,24 @@ const CabinsTable = () => {
                 <Trash />
               </Button>
 
-              <Button className="cursor-pointer">
+              <Button
+                onClick={() => {
+                  setCabinToEdit(cabin);
+                  setDialogIsOpen(true);
+                }}
+                className="cursor-pointer"
+              >
                 <Edit />
               </Button>
             </TableCell>
           </TableRow>
         ))}
       </TableBody>
+      <CabinDialogForm
+        isOpen={dialogIsOpen}
+        setIsOpen={setDialogIsOpen}
+        cabinToEdit={cabinToEdit as z.infer<typeof editCabinSchema>}
+      />
     </Table>
   );
 };

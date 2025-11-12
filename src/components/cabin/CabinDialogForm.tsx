@@ -4,7 +4,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   useForm,
@@ -27,17 +26,34 @@ import { cabinDefalutValues } from "@/lib/constants";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { useState, type FormEvent } from "react";
+import { useEffect, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import cabinServices from "@/services/apiCabins";
 import { toast } from "sonner";
-import { supabaseUrl } from "@/services/supabase";
+import type { editCabinSchema } from "@/validators/cabinValidators";
 
 export type CabinFormData = z.infer<typeof cabinSchema>;
+export type EditCabinFormData = z.infer<typeof editCabinSchema>;
 
-const CabinDialogForm = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const CabinDialogForm = ({
+  cabinToEdit,
+  isOpen,
+  setIsOpen,
+}: {
+  cabinToEdit?: z.infer<typeof editCabinSchema> | null;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}) => {
+  const reformattedCabinToEdit: Partial<EditCabinFormData> = {
+    name: cabinToEdit?.name,
+    maxCapacity: cabinToEdit?.maxCapacity,
+    regularPrice: cabinToEdit?.regularPrice,
+    discount: cabinToEdit?.discount,
+    description: cabinToEdit?.description,
+    image: cabinToEdit?.image,
+  };
   const queryClient = useQueryClient();
+  const isEditingSession = Boolean(cabinToEdit?.id);
 
   const form = useForm<CabinFormData>({
     resolver: zodResolver(cabinSchema) as Resolver<CabinFormData>,
@@ -45,6 +61,14 @@ const CabinDialogForm = () => {
   });
 
   const { field } = useController({ name: "image", control: form.control });
+
+  useEffect(() => {
+    if (isEditingSession) {
+      form.reset(reformattedCabinToEdit);
+    } else {
+      form.reset(cabinDefalutValues);
+    }
+  }, [isEditingSession, cabinToEdit, isOpen]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: cabinServices.createCabin,
@@ -60,14 +84,13 @@ const CabinDialogForm = () => {
   });
 
   const onSubmit: SubmitHandler<CabinFormData> = (data) => {
-    mutate(data);
+    console.log(data);
+
+    // mutate(data);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Create Cabin</Button>
-      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create New Cabin</DialogTitle>
@@ -202,7 +225,7 @@ const CabinDialogForm = () => {
             />
             <div className="flex gap-3">
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Creating..." : "Create"}
+                {isEditingSession ? "Edit" : "Create"}
               </Button>
               <Button
                 onClick={() => {

@@ -22,7 +22,9 @@ const cabinServices = {
   },
 
   createCabin: async (newCabin: z.infer<typeof cabinSchema>) => {
-    const imageName = `${Math.random()}-${newCabin.image?.name}`.replaceAll(
+    const cabinImage: File = newCabin.image as File;
+
+    const imageName = `${Math.random()}-${cabinImage?.name}`.replaceAll(
       "/",
       ""
     );
@@ -31,7 +33,10 @@ const cabinServices = {
 
     const { data, error } = await supabase
       .from("cabins")
-      .insert({ ...newCabin, image: imagePath });
+      .insert([{ ...newCabin, image: imagePath }])
+      .select()
+      .single();
+
     if (error) {
       console.error(error);
       throw new Error("Cabin could not be created");
