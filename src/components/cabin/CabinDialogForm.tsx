@@ -6,7 +6,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useForm, type SubmitHandler, type Resolver } from "react-hook-form";
+import {
+  useForm,
+  type SubmitHandler,
+  type Resolver,
+  useController,
+} from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -22,10 +27,11 @@ import { cabinDefalutValues } from "@/lib/constants";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import cabinServices from "@/services/apiCabins";
 import { toast } from "sonner";
+import { supabaseUrl } from "@/services/supabase";
 
 export type CabinFormData = z.infer<typeof cabinSchema>;
 
@@ -37,6 +43,8 @@ const CabinDialogForm = () => {
     resolver: zodResolver(cabinSchema) as Resolver<CabinFormData>,
     defaultValues: cabinDefalutValues,
   });
+
+  const { field } = useController({ name: "image", control: form.control });
 
   const { mutate, isPending } = useMutation({
     mutationFn: cabinServices.createCabin,
@@ -159,7 +167,7 @@ const CabinDialogForm = () => {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="border h-10 shadow-muted "
+                      className="border h-10 shadow-muted"
                       placeholder="Enter description"
                       {...field}
                     />
@@ -172,14 +180,20 @@ const CabinDialogForm = () => {
             <FormField
               control={form.control}
               name="image"
-              render={({ field }) => (
+              render={() => (
                 <FormItem className="w-full">
                   <FormLabel>Image</FormLabel>
                   <FormControl>
                     <Input
+                      accept="image/*"
+                      type="file"
                       className="border h-10 shadow-muted rounded-full"
                       placeholder="Enter image url"
-                      {...field}
+                      onChange={(e: FormEvent<HTMLInputElement>) => {
+                        const file = e.currentTarget.files?.[0] ?? null;
+                        form.setValue("image", file, { shouldValidate: true });
+                      }}
+                      ref={field.ref}
                     />
                   </FormControl>
                   <FormMessage />

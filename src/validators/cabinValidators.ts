@@ -12,7 +12,7 @@ export const cabinSchema = z
       .min(0, "Discount must be at least 0")
       .optional(),
     description: z.string().optional(),
-    image: z.string().url("Image must be a valid URL").optional(),
+    image: z.instanceof(File).nullable(),
   })
   .superRefine((data, ctx) => {
     const { discount, regularPrice } = data;

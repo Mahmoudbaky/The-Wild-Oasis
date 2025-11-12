@@ -4,5 +4,5 @@ export const cabinDefalutValues = {
   regularPrice: 0,
   discount: 0,
   description: "",
-  image: "",
+  image: null,
 };

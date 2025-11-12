@@ -4,7 +4,6 @@ import { DotsLoader } from "react-loadly";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -14,15 +13,12 @@ import type { Database } from "@/types/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
+import { Trash, Edit } from "lucide-react";
 
 type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
 
 const CabinsTable = () => {
-  const {
-    isLoading,
-    data: cabins,
-    error,
-  } = useQuery({
+  const { isLoading, data: cabins } = useQuery({
     queryKey: ["cabins"],
     queryFn: cabinServices.getCabins,
   });
@@ -81,15 +77,19 @@ const CabinsTable = () => {
             <TableCell className="text-center">
               {cabin.discount ? `${formatCurrency(cabin.discount)}` : "N/A"}
             </TableCell>
-            <TableCell className="text-center">
+            <TableCell className="text-center  space-x-3">
               <Button
-                className="text-red-600 hover:text-red-800"
+                className="bg-red-500 cursor-pointer"
                 onClick={() => {
                   mutate(cabin.id);
                 }}
                 disabled={isPending}
               >
-                Delete
+                <Trash />
+              </Button>
+
+              <Button className="cursor-pointer">
+                <Edit />
               </Button>
             </TableCell>
           </TableRow>
