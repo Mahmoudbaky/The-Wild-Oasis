@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import cabinServices from "@/services/apiCabins";
 import { DotsLoader } from "react-loadly";
 import {
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import type { Database } from "@/types/supabase";
 import { formatCurrency } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
 
 type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
 
@@ -23,6 +25,21 @@ const CabinsTable = () => {
   } = useQuery({
     queryKey: ["cabins"],
     queryFn: cabinServices.getCabins,
+  });
+
+  const queryClient = useQueryClient();
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: cabinServices.deleteCabin,
+    onSuccess: () => {
+      toast.success("Cabin deleted successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["cabins"],
+      });
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
   });
 
   if (isLoading)
@@ -47,6 +64,7 @@ const CabinsTable = () => {
           <TableHead className="text-center">CAPACITY</TableHead>
           <TableHead className="text-center">PRICE</TableHead>
           <TableHead className="text-center">DISCOUNT</TableHead>
+          <TableHead className="text-center">ACTIONS</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -64,6 +82,17 @@ const CabinsTable = () => {
             </TableCell>
             <TableCell className="text-center">
               {cabin.discount ? `${cabin.discount}%` : "N/A"}
+            </TableCell>
+            <TableCell className="text-center">
+              <Button
+                className="text-red-600 hover:text-red-800"
+                onClick={() => {
+                  mutate(cabin.id);
+                }}
+                disabled={isPending}
+              >
+                Delete
+              </Button>
             </TableCell>
           </TableRow>
         ))}

@@ -12,6 +12,7 @@ import {
   Settings,
   Users,
 } from "./pages";
+import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +25,7 @@ const queryClient = new QueryClient({
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools />
+      <ReactQueryDevtools initialIsOpen={false} />
       <BrowserRouter>
         <Routes>
           <Route element={<AppLayout />}>
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
+      <Toaster />
     </QueryClientProvider>
   );
 };
