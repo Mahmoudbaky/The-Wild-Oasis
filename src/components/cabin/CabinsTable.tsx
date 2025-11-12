@@ -74,14 +74,12 @@ const CabinsTable = () => {
               <img className="w-20" src={cabin.image!} alt={cabin.name!} />
             </TableCell>
             <TableCell className="text-center">{cabin.name}</TableCell>
-            <TableCell className="text-center">
-              {formatCurrency(cabin.maxCapacity!)}
-            </TableCell>
+            <TableCell className="text-center">{cabin.maxCapacity}</TableCell>
             <TableCell className="text-center">
               {formatCurrency(cabin.regularPrice!)}
             </TableCell>
             <TableCell className="text-center">
-              {cabin.discount ? `${cabin.discount}%` : "N/A"}
+              {cabin.discount ? `${formatCurrency(cabin.discount)}` : "N/A"}
             </TableCell>
             <TableCell className="text-center">
               <Button

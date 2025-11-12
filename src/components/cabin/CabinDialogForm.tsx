@@ -10,12 +10,10 @@ import { useForm, type SubmitHandler, type Resolver } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  useFormField,
 } from "../ui/form";
 import { z } from "zod";
 import { cabinSchema } from "@/validators/cabinValidators";
@@ -189,7 +187,9 @@ const CabinDialogForm = () => {
               )}
             />
             <div className="flex gap-3">
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Creating..." : "Create"}
+              </Button>
               <Button
                 onClick={() => {
                   form.reset();
