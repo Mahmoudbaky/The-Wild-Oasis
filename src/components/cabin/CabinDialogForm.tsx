@@ -44,6 +44,7 @@ const CabinDialogForm = ({
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) => {
+  // constatns
   const reformattedCabinToEdit: Partial<EditCabinFormData> = {
     name: cabinToEdit?.name,
     maxCapacity: cabinToEdit?.maxCapacity,
@@ -55,6 +56,7 @@ const CabinDialogForm = ({
   const queryClient = useQueryClient();
   const isEditingSession = Boolean(cabinToEdit?.id);
 
+  // Form setup and control
   const form = useForm<CabinFormData>({
     resolver: zodResolver(cabinSchema) as Resolver<CabinFormData>,
     defaultValues: cabinDefalutValues,
@@ -62,6 +64,7 @@ const CabinDialogForm = ({
 
   const { field } = useController({ name: "image", control: form.control });
 
+  // Form reset
   useEffect(() => {
     if (isEditingSession) {
       form.reset(reformattedCabinToEdit);
@@ -70,7 +73,8 @@ const CabinDialogForm = ({
     }
   }, [isEditingSession, cabinToEdit, isOpen]);
 
-  const { mutate, isPending } = useMutation({
+  // Create cabin mutation
+  const { mutate: createCabin, isPending: isCreating } = useMutation({
     mutationFn: cabinServices.createCabin,
     onSuccess: () => {
       toast.success("Cabin Created Successfully");
@@ -83,10 +87,35 @@ const CabinDialogForm = ({
     onError: (err) => toast.error(err.message),
   });
 
+  // Edit cabin mutation
+  const { mutate: editCabin, isPending: isEditing } = useMutation({
+    mutationFn: ({
+      newCabinData,
+      id,
+    }: {
+      newCabinData: Partial<EditCabinFormData>;
+      id: number;
+    }) => cabinServices.editCabin(newCabinData, id),
+    onSuccess: () => {
+      toast.success("Cabin Edited Successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["cabins"],
+      });
+      form.reset();
+      setIsOpen(false);
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const isWorking = isCreating || isEditing;
+
   const onSubmit: SubmitHandler<CabinFormData> = (data) => {
     console.log(data);
-
-    // mutate(data);
+    if (isEditingSession) {
+      editCabin({ newCabinData: data, id: cabinToEdit!.id });
+    } else {
+      createCabin(data);
+    }
   };
 
   return (
@@ -224,10 +253,11 @@ const CabinDialogForm = ({
               )}
             />
             <div className="flex gap-3">
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isWorking}>
                 {isEditingSession ? "Edit" : "Create"}
               </Button>
               <Button
+                type="button"
                 onClick={() => {
                   form.reset();
                   setIsOpen(false);
