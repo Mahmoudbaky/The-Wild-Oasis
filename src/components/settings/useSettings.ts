@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import settingsServices from "@/services/apiSettings";
+import settingsServices from "@/services/apiSettings.ts";
 
 export const useSettings = () => {
   const {
