@@ -1,5 +1,3 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import cabinServices from "@/services/apiCabins";
 import { DotsLoader } from "react-loadly";
 import {
   Table,
@@ -12,40 +10,22 @@ import {
 import type { Database } from "@/types/supabase";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { toast } from "sonner";
 import { Trash, Edit } from "lucide-react";
 import CabinDialogForm from "./CabinDialogForm";
 import { useState } from "react";
 import { z } from "zod";
 import { cabinSchema } from "@/validators/cabinValidators";
 import type { editCabinSchema } from "@/validators/cabinValidators";
-
+import { useDeleteCabin } from "./useDeleteCabin";
+import { useCabins } from "./useCabins";
 type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
 export type CabinFormData = z.infer<typeof cabinSchema>;
 
 const CabinsTable = () => {
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const [cabinToEdit, setCabinToEdit] = useState<Cabin>();
-
-  const { isLoading, data: cabins } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: cabinServices.getCabins,
-  });
-
-  const queryClient = useQueryClient();
-
-  const { isPending, mutate } = useMutation({
-    mutationFn: cabinServices.deleteCabin,
-    onSuccess: () => {
-      toast.success("Cabin deleted successfully");
-      queryClient.invalidateQueries({
-        queryKey: ["cabins"],
-      });
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
+  const { isDeleting, deleteCabin } = useDeleteCabin();
+  const { cabins, isLoading } = useCabins();
 
   if (isLoading)
     return (
@@ -90,9 +70,9 @@ const CabinsTable = () => {
               <Button
                 className="bg-red-500 cursor-pointer"
                 onClick={() => {
-                  mutate(cabin.id);
+                  deleteCabin(cabin.id);
                 }}
-                disabled={isPending}
+                disabled={isDeleting}
               >
                 <Trash />
               </Button>
