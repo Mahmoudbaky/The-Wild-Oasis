@@ -18,6 +18,10 @@ import { cabinSchema } from "@/validators/cabinValidators";
 import type { editCabinSchema } from "@/validators/cabinValidators";
 import { useDeleteCabin } from "./useDeleteCabin";
 import { useCabins } from "./useCabins";
+import { Copy } from "lucide-react";
+import { useCreateCabin } from "./useCreateCabin";
+import { toast } from "sonner";
+
 type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
 export type CabinFormData = z.infer<typeof cabinSchema>;
 
@@ -26,6 +30,7 @@ const CabinsTable = () => {
   const [cabinToEdit, setCabinToEdit] = useState<Cabin>();
   const { isDeleting, deleteCabin } = useDeleteCabin();
   const { cabins, isLoading } = useCabins();
+  const { createCabin, isCreating } = useCreateCabin();
 
   if (isLoading)
     return (
@@ -39,6 +44,24 @@ const CabinsTable = () => {
         secondaryColor="#476546"
       />
     );
+
+  const handleCrateCopy = (cabin: CabinFormData) => {
+    createCabin(
+      {
+        name: `Copy of ${cabin.name}`,
+        image: cabin.image,
+        maxCapacity: cabin.maxCapacity,
+        regularPrice: cabin.regularPrice,
+        discount: cabin.discount,
+        description: cabin.description,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Cabin Copy Created Successfully");
+        },
+      }
+    );
+  };
 
   return (
     <Table className="mt-5">
@@ -85,6 +108,16 @@ const CabinsTable = () => {
                 className="cursor-pointer"
               >
                 <Edit />
+              </Button>
+
+              <Button
+                disabled={isCreating}
+                onClick={() => {
+                  handleCrateCopy(cabin as CabinFormData);
+                }}
+                className="cursor-pointer"
+              >
+                <Copy />
               </Button>
             </TableCell>
           </TableRow>

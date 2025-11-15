@@ -6,3 +6,10 @@ export const cabinDefalutValues = {
   description: "",
   image: null,
 };
+
+export const settingsDefaultValues = {
+  minBookingLength: 1,
+  maxBookingLength: 1,
+  maxGestsPerBooking: 1,
+  breakfastPrice: 0,
+};

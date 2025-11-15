@@ -22,6 +22,10 @@ const cabinServices = {
   },
 
   createCabin: async (newCabin: z.infer<typeof cabinSchema>) => {
+    const hasImage = Boolean(
+      newCabin.image && typeof newCabin.image === "string"
+    );
+
     const cabinImage: File = newCabin.image as File;
 
     const imageName = `${Math.random()}-${cabinImage?.name}`.replaceAll(
@@ -29,7 +33,9 @@ const cabinServices = {
       ""
     );
 
-    const imagePath = `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
+    const imagePath = hasImage
+      ? newCabin.image
+      : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
 
     const { data, error } = await supabase
       .from("cabins")
@@ -61,8 +67,6 @@ const cabinServices = {
     editedCabin: Partial<z.infer<typeof editCabinSchema>>,
     id: number
   ) => {
-    console.log(editedCabin, id);
-
     const hasImagePath = typeof editedCabin.image === "string";
 
     const cabinImage: File = editedCabin.image as File;
