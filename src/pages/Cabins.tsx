@@ -4,6 +4,7 @@ import CabinsTable from "@/components/cabin/CabinsTable";
 import CabinDialogForm from "@/components/cabin/CabinDialogForm";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import CabinForm from "@/components/cabin/CabinForm";
 
 function Cabins() {
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
@@ -23,7 +24,11 @@ function Cabins() {
       </Row>
 
       <CabinsTable />
-      <CabinDialogForm isOpen={dialogIsOpen} setIsOpen={setDialogIsOpen} />
+
+      {/* Perant-Children pattern is applied here */}
+      <CabinDialogForm isOpen={dialogIsOpen} setIsOpen={setDialogIsOpen}>
+        <CabinForm setIsOpen={setDialogIsOpen} />
+      </CabinDialogForm>
     </>
   );
 }

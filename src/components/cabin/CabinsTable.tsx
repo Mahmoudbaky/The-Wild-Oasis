@@ -21,6 +21,7 @@ import { useCabins } from "./useCabins";
 import { Copy } from "lucide-react";
 import { useCreateCabin } from "./useCreateCabin";
 import { toast } from "sonner";
+import CabinForm from "./CabinForm";
 
 type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
 export type CabinFormData = z.infer<typeof cabinSchema>;
@@ -123,11 +124,14 @@ const CabinsTable = () => {
           </TableRow>
         ))}
       </TableBody>
-      <CabinDialogForm
-        isOpen={dialogIsOpen}
-        setIsOpen={setDialogIsOpen}
-        cabinToEdit={cabinToEdit as z.infer<typeof editCabinSchema>}
-      />
+
+      {/* Perant-Children pattern is applied here */}
+      <CabinDialogForm isOpen={dialogIsOpen} setIsOpen={setDialogIsOpen}>
+        <CabinForm
+          cabinToEdit={cabinToEdit as z.infer<typeof editCabinSchema>}
+          setIsOpen={setDialogIsOpen}
+        />
+      </CabinDialogForm>
     </Table>
   );
 };
