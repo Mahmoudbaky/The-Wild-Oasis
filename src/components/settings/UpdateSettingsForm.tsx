@@ -9,17 +9,16 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
 import { useEffect, type FormEvent } from "react";
 import { useSettings } from "./useSettings";
-import { toast } from "sonner";
+
 import { settingsSchema } from "@/validators/settingsValidators";
 import { useForm, type Resolver, type SubmitHandler } from "react-hook-form";
 import { DotsLoader } from "react-loadly";
 import { useUpdateSettings } from "./useUpdateSettings";
 const UpdateSettingsForm = () => {
-  const { settings, error, isLoading } = useSettings();
-  const { updateSettings, isUpdating } = useUpdateSettings();
+  const { settings, isLoading } = useSettings();
+  const { updateSettings } = useUpdateSettings();
 
   const form = useForm<z.infer<typeof settingsSchema>>({
     resolver: zodResolver(settingsSchema) as Resolver<
@@ -35,7 +34,6 @@ const UpdateSettingsForm = () => {
   const handleSubmit = (e: FormEvent, field: string) => {
     e.preventDefault();
     const { value } = e.target as HTMLFormElement;
-    console.log(value);
     if (!value) return;
     updateSettings({ [field]: value } as z.infer<typeof settingsSchema>);
   };

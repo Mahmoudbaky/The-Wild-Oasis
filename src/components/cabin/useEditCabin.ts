@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import cabinServices from "@/services/apiCabins";
 import { toast } from "sonner";
-import type { EditCabinFormData } from "./CabinDialogForm";
+import type { EditCabinFormData } from "@/types";
+
+
 
 export const useEditCabin = () => {
   const queryClient = useQueryClient();

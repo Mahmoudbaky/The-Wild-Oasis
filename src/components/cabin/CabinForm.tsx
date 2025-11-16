@@ -1,3 +1,20 @@
+import { useCreateCabin } from "./useCreateCabin";
+import { useEditCabin } from "./useEditCabin";
+import { useEffect, type FormEvent } from "react";
+import {
+  useForm,
+  type SubmitHandler,
+  type Resolver,
+  useController,
+} from "react-hook-form";
+
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cabinDefalutValues } from "@/lib/constants";
+import { cabinSchema } from "@/validators/cabinValidators";
+import { useContext } from "react";
+import { ModalContext } from "../Modal";
+
 import {
   Form,
   FormControl,
@@ -9,30 +26,15 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useForm,
-  type SubmitHandler,
-  type Resolver,
-  useController,
-} from "react-hook-form";
-import { useCreateCabin } from "./useCreateCabin";
-import { useEditCabin } from "./useEditCabin";
-import { cabinDefalutValues } from "@/lib/constants";
-import { cabinSchema, editCabinSchema } from "@/validators/cabinValidators";
-import { z } from "zod";
-import { useEffect, type FormEvent } from "react";
-
-export type CabinFormData = z.infer<typeof cabinSchema>;
-export type EditCabinFormData = z.infer<typeof editCabinSchema>;
+import type { CabinFormData, EditCabinFormData } from "@/types";
 
 const CabinForm = ({
   cabinToEdit,
-  setIsOpen,
 }: {
-  cabinToEdit?: z.infer<typeof editCabinSchema> | null;
-  setIsOpen: (isOpen: boolean) => void;
+  cabinToEdit?: EditCabinFormData | null;
 }) => {
+  const { close } = useContext(ModalContext);
+
   // Form setup and control
   const form = useForm<CabinFormData>({
     resolver: zodResolver(cabinSchema) as Resolver<CabinFormData>,
@@ -67,23 +69,21 @@ const CabinForm = ({
   const isWorking = isCreating || isEditing;
 
   const onSubmit: SubmitHandler<CabinFormData> = (data) => {
-    console.log(data);
     if (isEditingSession) {
       editCabin(
         { newCabinData: data, id: cabinToEdit!.id },
         {
           onSuccess: () => {
             form.reset();
-            setIsOpen(false);
+            close();
           },
         }
       );
     } else {
       createCabin(data, {
-        onSuccess: (data) => {
-          console.log(data);
+        onSuccess: () => {
           form.reset();
-          setIsOpen(false);
+          close();
         },
       });
     }
@@ -220,7 +220,7 @@ const CabinForm = ({
             type="button"
             onClick={() => {
               form.reset();
-              setIsOpen(false);
+              close();
             }}
           >
             Cancel

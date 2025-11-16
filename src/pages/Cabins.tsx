@@ -1,34 +1,29 @@
+import CabinForm from "@/components/cabin/CabinForm";
+import CabinsTable from "@/components/cabin/CabinsTable";
 import Heading from "../components/Heading";
 import Row from "../components/Row";
-import CabinsTable from "@/components/cabin/CabinsTable";
-import CabinDialogForm from "@/components/cabin/CabinDialogForm";
+import Modal from "@/components/Modal";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import CabinForm from "@/components/cabin/CabinForm";
 
 function Cabins() {
-  const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-
   return (
     <>
       <Row type="horizontal">
         <Heading as="h1">All cabins</Heading>
-        <Button
-          onClick={() => {
-            setDialogIsOpen(true);
-          }}
-          variant="outline"
-        >
-          Create Cabin
-        </Button>
+        <h1>Sort/Filter</h1>
       </Row>
 
       <CabinsTable />
 
-      {/* Perant-Children pattern is applied here */}
-      <CabinDialogForm isOpen={dialogIsOpen} setIsOpen={setDialogIsOpen}>
-        <CabinForm setIsOpen={setDialogIsOpen} />
-      </CabinDialogForm>
+      {/* Compound Component pattern is applied here */}
+      <Modal>
+        <Modal.Open opens="cabin-form">
+          <Button variant="outline">Create Cabin</Button>
+        </Modal.Open>
+        <Modal.Window name="cabin-form">
+          <CabinForm />
+        </Modal.Window>
+      </Modal>
     </>
   );
 }

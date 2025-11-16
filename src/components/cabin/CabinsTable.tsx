@@ -1,4 +1,14 @@
+import { useState } from "react";
+import { useCreateCabin } from "./useCreateCabin";
+import { useCabins } from "./useCabins";
+
+import { formatCurrency } from "@/lib/utils";
+
+import { z } from "zod";
+import type { CabinFormData, Cabin } from "@/types";
+
 import { DotsLoader } from "react-loadly";
+import { Copy, Edit, Trash } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -7,29 +17,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Database } from "@/types/supabase";
-import { formatCurrency } from "@/lib/utils";
 import { Button } from "../ui/button";
-import { Trash, Edit } from "lucide-react";
-import CabinDialogForm from "./CabinDialogForm";
-import { useState } from "react";
-import { z } from "zod";
-import { cabinSchema } from "@/validators/cabinValidators";
-import type { editCabinSchema } from "@/validators/cabinValidators";
-import { useDeleteCabin } from "./useDeleteCabin";
-import { useCabins } from "./useCabins";
-import { Copy } from "lucide-react";
-import { useCreateCabin } from "./useCreateCabin";
 import { toast } from "sonner";
+import type { editCabinSchema } from "@/validators/cabinValidators";
 import CabinForm from "./CabinForm";
-
-type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
-export type CabinFormData = z.infer<typeof cabinSchema>;
+import CabinDeletionConfirm from "./CabinDeletionConfirm";
+import Modal from "../Modal";
 
 const CabinsTable = () => {
-  const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const [cabinToEdit, setCabinToEdit] = useState<Cabin>();
-  const { isDeleting, deleteCabin } = useDeleteCabin();
+  const [cabinToDelete, setCabinToDelete] = useState<number>(0);
   const { cabins, isLoading } = useCabins();
   const { createCabin, isCreating } = useCreateCabin();
 
@@ -90,27 +87,41 @@ const CabinsTable = () => {
             <TableCell className="text-center">
               {cabin.discount ? `${formatCurrency(cabin.discount)}` : "N/A"}
             </TableCell>
-            <TableCell className="text-center  space-x-3">
-              <Button
-                className="bg-red-500 cursor-pointer"
-                onClick={() => {
-                  deleteCabin(cabin.id);
-                }}
-                disabled={isDeleting}
-              >
-                <Trash />
-              </Button>
+            <TableCell className="text-center space-x-3">
+              {/* Compound Component pattern is applied here */}
+              <Modal>
+                {/* Delete */}
+                <Modal.Open opens="delete-cabin">
+                  <Button
+                    className="bg-red-500 cursor-pointer"
+                    onClick={() => {
+                      setCabinToDelete(cabin.id);
+                    }}
+                  >
+                    <Trash />
+                  </Button>
+                </Modal.Open>
+                <Modal.Window name="delete-cabin">
+                  <CabinDeletionConfirm cabinId={cabinToDelete} />
+                </Modal.Window>
 
-              <Button
-                onClick={() => {
-                  setCabinToEdit(cabin);
-                  setDialogIsOpen(true);
-                }}
-                className="cursor-pointer"
-              >
-                <Edit />
-              </Button>
-
+                {/* Edit */}
+                <Modal.Open opens="edit-cabin">
+                  <Button
+                    onClick={() => {
+                      setCabinToEdit(cabin);
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <Edit />
+                  </Button>
+                </Modal.Open>
+                <Modal.Window name="edit-cabin">
+                  <CabinForm
+                    cabinToEdit={cabinToEdit as z.infer<typeof editCabinSchema>}
+                  />
+                </Modal.Window>
+              </Modal>
               <Button
                 disabled={isCreating}
                 onClick={() => {
@@ -124,14 +135,6 @@ const CabinsTable = () => {
           </TableRow>
         ))}
       </TableBody>
-
-      {/* Perant-Children pattern is applied here */}
-      <CabinDialogForm isOpen={dialogIsOpen} setIsOpen={setDialogIsOpen}>
-        <CabinForm
-          cabinToEdit={cabinToEdit as z.infer<typeof editCabinSchema>}
-          setIsOpen={setDialogIsOpen}
-        />
-      </CabinDialogForm>
     </Table>
   );
 };
