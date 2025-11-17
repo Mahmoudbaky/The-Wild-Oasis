@@ -36,9 +36,10 @@ const CabinsTable = () => {
   const [cabinToEdit, setCabinToEdit] = useState<Cabin>();
   const [cabinToDelete, setCabinToDelete] = useState<number>(0);
   const { cabins, isLoading } = useCabins();
-  const { createCabin, isCreating } = useCreateCabin();
+  const { createCabin: createCabinCopy, isCreating } = useCreateCabin();
 
   const discountFilter = searchParams.get("discount") || "all";
+  const sortOption = searchParams.get("sort");
 
   const filteredCabins = cabins?.filter((cabin) => {
     if (discountFilter === "with-discount") {
@@ -47,6 +48,36 @@ const CabinsTable = () => {
       return !cabin.discount || cabin.discount === 0;
     }
     return true;
+  });
+
+  const sortedCabins = filteredCabins?.slice().sort((a, b) => {
+    if (!sortOption) return 0;
+
+    const [field, order] = sortOption.split("-");
+
+    let aValue: string | number = "";
+    let bValue: string | number = "";
+
+    switch (field) {
+      case "name":
+        aValue = a.name || "";
+        bValue = b.name || "";
+        break;
+      case "regularPrice":
+        aValue = a.regularPrice || 0;
+        bValue = b.regularPrice || 0;
+        break;
+      case "maxCapacity":
+        aValue = a.maxCapacity || 0;
+        bValue = b.maxCapacity || 0;
+        break;
+      default:
+        break;
+    }
+
+    if (aValue < bValue) return order === "asc" ? -1 : 1;
+    if (aValue > bValue) return order === "asc" ? 1 : -1;
+    return 0;
   });
 
   if (isLoading)
@@ -63,7 +94,7 @@ const CabinsTable = () => {
     );
 
   const handleCrateCopy = (cabin: CabinFormData) => {
-    createCabin(
+    createCabinCopy(
       {
         name: `Copy of ${cabin.name}`,
         image: cabin.image,
@@ -93,7 +124,7 @@ const CabinsTable = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {filteredCabins?.map((cabin: Cabin) => (
+        {sortedCabins?.map((cabin: Cabin) => (
           <TableRow key={cabin.id}>
             <TableCell className="text-center w-20">
               <img className="w-20" src={cabin.image!} alt={cabin.name!} />
