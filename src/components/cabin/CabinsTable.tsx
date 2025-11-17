@@ -8,7 +8,7 @@ import { z } from "zod";
 import type { CabinFormData, Cabin } from "@/types";
 
 import { DotsLoader } from "react-loadly";
-import { Copy, Edit, Trash } from "lucide-react";
+import { Copy, Edit, Trash, MoreVertical } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -17,6 +17,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import type { editCabinSchema } from "@/validators/cabinValidators";
@@ -87,50 +95,71 @@ const CabinsTable = () => {
             <TableCell className="text-center">
               {cabin.discount ? `${formatCurrency(cabin.discount)}` : "N/A"}
             </TableCell>
-            <TableCell className="text-center space-x-3">
-              {/* Compound Component pattern is applied here */}
-              <Modal>
-                {/* Delete */}
-                <Modal.Open opens="delete-cabin">
-                  <Button
-                    className="bg-red-500 cursor-pointer"
-                    onClick={() => {
-                      setCabinToDelete(cabin.id);
-                    }}
-                  >
-                    <Trash />
-                  </Button>
-                </Modal.Open>
-                <Modal.Window name="delete-cabin">
-                  <CabinDeletionConfirm cabinId={cabinToDelete} />
-                </Modal.Window>
 
-                {/* Edit */}
-                <Modal.Open opens="edit-cabin">
-                  <Button
-                    onClick={() => {
-                      setCabinToEdit(cabin);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <Edit />
-                  </Button>
-                </Modal.Open>
-                <Modal.Window name="edit-cabin">
-                  <CabinForm
-                    cabinToEdit={cabinToEdit as z.infer<typeof editCabinSchema>}
-                  />
-                </Modal.Window>
-              </Modal>
-              <Button
-                disabled={isCreating}
-                onClick={() => {
-                  handleCrateCopy(cabin as CabinFormData);
-                }}
-                className="cursor-pointer"
-              >
-                <Copy />
-              </Button>
+            <TableCell className="text-center space-x-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <MoreVertical />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Modal>
+                      {/* Delete */}
+                      <Modal.Open opens="delete-cabin">
+                        <Button
+                          variant="ghost"
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setCabinToDelete(cabin.id);
+                          }}
+                        >
+                          <Trash />
+                          Delete
+                        </Button>
+                      </Modal.Open>
+                      <Modal.Window name="delete-cabin">
+                        <CabinDeletionConfirm cabinId={cabinToDelete} />
+                      </Modal.Window>
+                    </Modal>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Modal>
+                      <Modal.Open opens="edit-cabin">
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            setCabinToEdit(cabin);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <Edit />
+                          Edit
+                        </Button>
+                      </Modal.Open>
+                      <Modal.Window name="edit-cabin">
+                        <CabinForm
+                          cabinToEdit={
+                            cabinToEdit as z.infer<typeof editCabinSchema>
+                          }
+                        />
+                      </Modal.Window>
+                    </Modal>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button
+                      variant="ghost"
+                      disabled={isCreating}
+                      onClick={() => {
+                        handleCrateCopy(cabin as CabinFormData);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      <Copy />
+                      {isCreating ? "Copying..." : "Create Copy"}
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </TableCell>
           </TableRow>
         ))}
