@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useCreateCabin } from "./useCreateCabin";
 import { useCabins } from "./useCabins";
+import { useSearchParams } from "react-router";
 
 import { formatCurrency } from "@/lib/utils";
 
@@ -21,8 +22,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
@@ -33,10 +32,22 @@ import CabinDeletionConfirm from "./CabinDeletionConfirm";
 import Modal from "../Modal";
 
 const CabinsTable = () => {
+  const [searchParams] = useSearchParams();
   const [cabinToEdit, setCabinToEdit] = useState<Cabin>();
   const [cabinToDelete, setCabinToDelete] = useState<number>(0);
   const { cabins, isLoading } = useCabins();
   const { createCabin, isCreating } = useCreateCabin();
+
+  const discountFilter = searchParams.get("discount") || "all";
+
+  const filteredCabins = cabins?.filter((cabin) => {
+    if (discountFilter === "with-discount") {
+      return cabin.discount && cabin.discount > 0;
+    } else if (discountFilter === "no-discount") {
+      return !cabin.discount || cabin.discount === 0;
+    }
+    return true;
+  });
 
   if (isLoading)
     return (
@@ -82,7 +93,7 @@ const CabinsTable = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {cabins?.map((cabin: Cabin) => (
+        {filteredCabins?.map((cabin: Cabin) => (
           <TableRow key={cabin.id}>
             <TableCell className="text-center w-20">
               <img className="w-20" src={cabin.image!} alt={cabin.name!} />

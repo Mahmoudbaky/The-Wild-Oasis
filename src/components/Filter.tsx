@@ -1,4 +1,3 @@
-import React from "react";
 import { useSearchParams } from "react-router";
 import { Button } from "./ui/button";
 
@@ -30,16 +29,12 @@ function Filter({ filterField, options }: FilterProps) {
 
         return (
           <Button
+            variant="default"
             key={option.value}
             onClick={() => handleClick(option.value)}
-            disabled={isActive}
             className={`
               border-none rounded-sm font-medium text-sm py-2 px-3 transition-all duration-300 cursor-pointer
-              ${
-                isActive
-                  ? "bg-primary text-white hover:bg-primary/90 cursor-pointer"
-                  : "bg-gray-50 hover:bg-gray-100 text-gray-950"
-              }
+              ${isActive ? "" : "bg-gray-50 hover:bg-gray-100 text-gray-950"}
             `}
           >
             {option.label}

@@ -19,7 +19,7 @@ function Cabins() {
       {/* Compound Component pattern is applied here */}
       <Modal>
         <Modal.Open opens="cabin-form">
-          <Button variant="outline">Create Cabin</Button>
+          <Button className="mt-3">Create Cabin</Button>
         </Modal.Open>
         <Modal.Window name="cabin-form">
           <CabinForm />
