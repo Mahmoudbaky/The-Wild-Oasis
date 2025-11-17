@@ -4,13 +4,14 @@ import Heading from "../components/Heading";
 import Row from "../components/Row";
 import Modal from "@/components/Modal";
 import { Button } from "@/components/ui/button";
+import CabinTableOperations from "@/components/cabin/CabinTableOperations";
 
 function Cabins() {
   return (
     <>
       <Row type="horizontal">
         <Heading as="h1">All cabins</Heading>
-        <h1>Sort/Filter</h1>
+        <CabinTableOperations />
       </Row>
 
       <CabinsTable />
