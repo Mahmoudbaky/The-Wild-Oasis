@@ -112,101 +112,107 @@ const CabinsTable = () => {
   };
 
   return (
-    <Table className="mt-5">
-      <TableHeader>
-        <TableRow>
-          <TableHead className="text-center"></TableHead>
-          <TableHead className="text-center">CABIN</TableHead>
-          <TableHead className="text-center">CAPACITY</TableHead>
-          <TableHead className="text-center">PRICE</TableHead>
-          <TableHead className="text-center">DISCOUNT</TableHead>
-          <TableHead className="text-center">ACTIONS</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sortedCabins?.map((cabin: Cabin) => (
-          <TableRow key={cabin.id}>
-            <TableCell className="text-center w-20">
-              <img className="w-20" src={cabin.image!} alt={cabin.name!} />
-            </TableCell>
-            <TableCell className="text-center">{cabin.name}</TableCell>
-            <TableCell className="text-center">{cabin.maxCapacity}</TableCell>
-            <TableCell className="text-center">
-              {formatCurrency(cabin.regularPrice!)}
-            </TableCell>
-            <TableCell className="text-center">
-              {cabin.discount ? `${formatCurrency(cabin.discount)}` : "N/A"}
-            </TableCell>
+    <div className="@container mt-5">
+      <div className="overflow-x-auto rounded-lg border-none shadow shadow-primary/10 dark:border-primary/30">
+        <Table>
+          <TableHeader className="bg-primary/10 dark:bg-primary/20">
+            <TableRow>
+              <TableHead className="text-center"></TableHead>
+              <TableHead className="text-center">CABIN</TableHead>
+              <TableHead className="text-center">CAPACITY</TableHead>
+              <TableHead className="text-center">PRICE</TableHead>
+              <TableHead className="text-center">DISCOUNT</TableHead>
+              <TableHead className="text-center">ACTIONS</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedCabins?.map((cabin: Cabin) => (
+              <TableRow key={cabin.id}>
+                <TableCell className="text-center w-20">
+                  <img className="w-20" src={cabin.image!} alt={cabin.name!} />
+                </TableCell>
+                <TableCell className="text-center">{cabin.name}</TableCell>
+                <TableCell className="text-center">
+                  {cabin.maxCapacity}
+                </TableCell>
+                <TableCell className="text-center">
+                  {formatCurrency(cabin.regularPrice!)}
+                </TableCell>
+                <TableCell className="text-center font-mono">
+                  {cabin.discount ? `${formatCurrency(cabin.discount)}` : "N/A"}
+                </TableCell>
 
-            <TableCell className="text-center space-x-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <MoreVertical />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Modal>
-                      {/* Delete */}
-                      <Modal.Open opens="delete-cabin">
+                <TableCell className="text-center space-x-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <MoreVertical />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <Modal>
+                          {/* Delete */}
+                          <Modal.Open opens="delete-cabin">
+                            <Button
+                              variant="ghost"
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setCabinToDelete(cabin.id);
+                              }}
+                            >
+                              <Trash />
+                              Delete
+                            </Button>
+                          </Modal.Open>
+                          <Modal.Window name="delete-cabin">
+                            <CabinDeletionConfirm cabinId={cabinToDelete} />
+                          </Modal.Window>
+                        </Modal>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <Modal>
+                          <Modal.Open opens="edit-cabin">
+                            <Button
+                              variant="ghost"
+                              onClick={() => {
+                                setCabinToEdit(cabin);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              <Edit />
+                              Edit
+                            </Button>
+                          </Modal.Open>
+                          <Modal.Window name="edit-cabin">
+                            <CabinForm
+                              cabinToEdit={
+                                cabinToEdit as z.infer<typeof editCabinSchema>
+                              }
+                            />
+                          </Modal.Window>
+                        </Modal>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
                         <Button
                           variant="ghost"
-                          className="cursor-pointer"
+                          disabled={isCreating}
                           onClick={() => {
-                            setCabinToDelete(cabin.id);
-                          }}
-                        >
-                          <Trash />
-                          Delete
-                        </Button>
-                      </Modal.Open>
-                      <Modal.Window name="delete-cabin">
-                        <CabinDeletionConfirm cabinId={cabinToDelete} />
-                      </Modal.Window>
-                    </Modal>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Modal>
-                      <Modal.Open opens="edit-cabin">
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            setCabinToEdit(cabin);
+                            handleCrateCopy(cabin as CabinFormData);
                           }}
                           className="cursor-pointer"
                         >
-                          <Edit />
-                          Edit
+                          <Copy />
+                          {isCreating ? "Copying..." : "Create Copy"}
                         </Button>
-                      </Modal.Open>
-                      <Modal.Window name="edit-cabin">
-                        <CabinForm
-                          cabinToEdit={
-                            cabinToEdit as z.infer<typeof editCabinSchema>
-                          }
-                        />
-                      </Modal.Window>
-                    </Modal>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Button
-                      variant="ghost"
-                      disabled={isCreating}
-                      onClick={() => {
-                        handleCrateCopy(cabin as CabinFormData);
-                      }}
-                      className="cursor-pointer"
-                    >
-                      <Copy />
-                      {isCreating ? "Copying..." : "Create Copy"}
-                    </Button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 };
 

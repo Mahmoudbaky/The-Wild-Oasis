@@ -1,19 +1,12 @@
 import { useState } from "react";
 import { isFuture, isPast, isToday } from "date-fns";
 import supabase from "../services/supabase";
-import Button from "../ui/Button";
-import { subtractDates } from "../utils/helpers";
+import { Button } from "../components/ui/button";
+import { subtractDates } from "../lib/utils";
 
 import { bookings } from "./data-bookings";
 import { cabins } from "./data-cabins";
 import { guests } from "./data-guests";
-
-// const originalSettings = {
-//   minBookingLength: 3,
-//   maxBookingLength: 30,
-//   maxGuestsPerBooking: 10,
-//   breakfastPrice: 15,
-// };
 
 async function deleteGuests() {
   const { error } = await supabase.from("guests").delete().gt("id", 0);
@@ -46,22 +39,22 @@ async function createBookings() {
     .from("guests")
     .select("id")
     .order("id");
-  const allGuestIds = guestsIds.map((cabin) => cabin.id);
+  const allGuestIds = guestsIds?.map((guest) => guest.id);
   const { data: cabinsIds } = await supabase
     .from("cabins")
     .select("id")
     .order("id");
-  const allCabinIds = cabinsIds.map((cabin) => cabin.id);
+  const allCabinIds = cabinsIds?.map((cabin) => cabin.id);
 
   const finalBookings = bookings.map((booking) => {
     // Here relying on the order of cabins, as they don't have and ID yet
     const cabin = cabins.at(booking.cabinId - 1);
     const numNights = subtractDates(booking.endDate, booking.startDate);
-    const cabinPrice = numNights * (cabin.regularPrice - cabin.discount);
-    const extrasPrice = booking.hasBreakfast
+    const cabinPrice = numNights * (cabin!.regularPrice - cabin!.discount);
+    const extraPrice = booking.hasBreakfast
       ? numNights * 15 * booking.numGuests
       : 0; // hardcoded breakfast price
-    const totalPrice = cabinPrice + extrasPrice;
+    const totalPrice = cabinPrice + extraPrice;
 
     let status;
     if (
@@ -86,10 +79,10 @@ async function createBookings() {
       ...booking,
       numNights,
       cabinPrice,
-      extrasPrice,
+      extraPrice,
       totalPrice,
-      guestId: allGuestIds.at(booking.guestId - 1),
-      cabinId: allCabinIds.at(booking.cabinId - 1),
+      guestId: allGuestIds?.at(booking.guestId - 1),
+      cabinId: allCabinIds?.at(booking.cabinId - 1),
       status,
     };
   });

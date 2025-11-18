@@ -5,7 +5,7 @@ const bookingsServices = {
   getBookings: async () => {
     const { data, error } = await supabase
       .from("bookings")
-      .select("* , cabins(name) , guests(fullName)");
+      .select("* , cabins(name) , guests(fullName ,email)");
 
     if (error) {
       console.error(error);

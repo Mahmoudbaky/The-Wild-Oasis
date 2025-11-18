@@ -11,6 +11,7 @@ export type Booking = Database["public"]["Tables"]["bookings"]["Row"] & {
   };
   guests: {
     fullName: Database["public"]["Tables"]["guests"]["Row"]["fullName"];
+    email: Database["public"]["Tables"]["guests"]["Row"]["email"];
   };
 };
 export type Cabin = Database["public"]["Tables"]["cabins"]["Row"];
