@@ -51,7 +51,7 @@ const BookingsTable = () => {
           <TableHeader className="bg-primary/10 dark:bg-primary/20">
             <TableRow>
               <TableHead className="w-[100px] text-center">CABIN</TableHead>
-              <TableHead className="text-left w-[150px]">GUEST NAME</TableHead>
+              <TableHead className="text-left w-[300px] ">GUEST NAME</TableHead>
               <TableHead className="text-left w-[150px]">DATES</TableHead>
               <TableHead className="text-center">STATUS</TableHead>
               <TableHead className="text-center">AMOUNT</TableHead>

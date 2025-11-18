@@ -154,7 +154,7 @@ const CabinsTable = () => {
                           <Modal.Open opens="delete-cabin">
                             <Button
                               variant="ghost"
-                              className="cursor-pointer"
+                              className="cursor-pointer "
                               onClick={() => {
                                 setCabinToDelete(cabin.id);
                               }}
@@ -198,7 +198,7 @@ const CabinsTable = () => {
                           onClick={() => {
                             handleCrateCopy(cabin as CabinFormData);
                           }}
-                          className="cursor-pointer"
+                          className="cursor-pointer w-full"
                         >
                           <Copy />
                           {isCreating ? "Copying..." : "Create Copy"}
