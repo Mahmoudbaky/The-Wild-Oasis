@@ -11,6 +11,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableCaption,
+  TableFooter,
 } from "@/components/ui/table";
 import {
   DropdownMenu,
@@ -20,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
+
 import { Badge } from "../ui/badge";
 import { DotsLoader } from "react-loadly";
 import { Copy, Edit, Trash, MoreVertical } from "lucide-react";
@@ -27,6 +30,7 @@ import { formatCurrency } from "@/lib/utils";
 
 import type { Booking } from "@/types";
 import Stacked from "../Stacked";
+import ReusablePagination from "../ReusablePagination";
 
 const BookingsTable = () => {
   const { bookings, isLoading } = useBookings();
@@ -55,7 +59,6 @@ const BookingsTable = () => {
               <TableHead className="text-left w-[150px]">DATES</TableHead>
               <TableHead className="text-center">STATUS</TableHead>
               <TableHead className="text-center">AMOUNT</TableHead>
-              <TableHead className="text-center">ACTIONS</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -113,10 +116,16 @@ const BookingsTable = () => {
                 <TableCell className="text-center">
                   {formatCurrency(booking.cabinPrice as number)}
                 </TableCell>
-                <TableCell className="text-center"></TableCell>
               </TableRow>
             ))}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={5}>
+                <ReusablePagination count={bookings?.length || 0} />
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
     </div>
