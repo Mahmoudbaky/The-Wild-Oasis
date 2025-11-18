@@ -13,3 +13,5 @@ export const settingsDefaultValues = {
   maxGestsPerBooking: 1,
   breakfastPrice: 0,
 };
+
+export const PAGE_SIZE = 10;

@@ -1,8 +1,7 @@
 import { useSearchParams } from "react-router";
 import { Button } from "./ui/button";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
-
-const PAGE_SIZE = 10;
+import { PAGE_SIZE } from "@/lib/constants";
 
 const ReusablePagination = ({ count }: { count: number }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,7 +53,7 @@ const ReusablePagination = ({ count }: { count: number }) => {
           variant="outline"
           className="mr-2 border-none shadow-none cursor-pointer"
         >
-          <HiChevronRight /> <span>Next</span>
+          <span>Next</span> <HiChevronRight />
         </Button>
       </div>
     </div>

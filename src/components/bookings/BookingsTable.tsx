@@ -33,7 +33,7 @@ import Stacked from "../Stacked";
 import ReusablePagination from "../ReusablePagination";
 
 const BookingsTable = () => {
-  const { bookings, isLoading } = useBookings();
+  const { bookings, isLoading, count } = useBookings();
 
   if (isLoading)
     return (
@@ -122,7 +122,7 @@ const BookingsTable = () => {
           <TableFooter>
             <TableRow>
               <TableCell colSpan={5}>
-                <ReusablePagination count={bookings?.length || 0} />
+                <ReusablePagination count={count || 0} />
               </TableCell>
             </TableRow>
           </TableFooter>
